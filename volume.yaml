@@ -1,0 +1,37 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-storage
+provisioner: efs.csi.aws.com
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-efs-pv
+  labels:
+    type: efs
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-storage
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: fs-0803d908e307c7409
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-efs-pvc
+  namespace: devops-tools
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-storage
+  resources:
+    requests:
+      storage: 10Gi
